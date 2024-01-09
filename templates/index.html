@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Prediction</title>
+
+    <!-- Add jQuery library (make sure to include it before your custom script) -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+    <!-- Add custom script for handling form submission -->
+    <script>
+        $(document).ready(function () {
+            // Attach a submit handler to the form
+            $("form").submit(function (event) {
+                // Prevent the default form submission
+                event.preventDefault();
+
+                // Create a FormData object to send the form data asynchronously
+                var formData = new FormData($(this)[0]);
+
+                // Send an AJAX request to the server
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        console.log(response)
+                        // Update the content of the result container
+                        $("#result-container").html("");  // Clear previous content
+                        if (response.result_image) {
+                            // Display the result image
+                            $("#result-container").append('<h2>Result:</h2><img src="data:image/jpeg;base64,' + response.result_image + '" alt="Predicted Image">');
+                        }
+                        if (response.error) {
+                            // Display the error message
+                            $("#result-container").append('<h2>Error:</h2><p>' + response.error + '</p>');
+                        }
+                    },
+                    error: function (error) {
+                        // Handle errors if needed
+                        console.log("Error:", error);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url('https://images.pexels.com/photos/4021806/pexels-photo-4021806.jpeg?auto=compress&cs=tinysrgb&w=800');
+            /* Placeholder image URL */
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        #main-container {
+            text-align: center;
+            margin-top: 30px;
+            /* Adjust the top margin as needed */
+        }
+
+        h1 {
+            margin-top: -222px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="main-container">
+        <h1>PHÂN VÙNG KHỐI U LÀNH/ÁC TÍNH VỚI UNET SEGMENTATION</h1>
+
+        <form id="prediction-form" enctype="multipart/form-data">
+            <!-- Remove action attribute to prevent default form submission -->
+            <label for="image">Chọn ảnh cần dự đoán:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+            <br>
+            <input type="submit" value="Predict">
+        </form>
+
+        <!-- Create a container for displaying the result asynchronously -->
+        <div id="result-container"></div>
+    </div>
+</body>
+
+</html>
